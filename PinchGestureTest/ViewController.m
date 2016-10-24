@@ -16,6 +16,7 @@
     UIScrollView *topScrollView;
     UIImageView *topImageV;
 }
+@property (nonatomic, assign) CGFloat defaultScale;
 @end
 
 @implementation ViewController
@@ -53,6 +54,9 @@
     [topScrollView addSubview:topImageV];
     UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchScaleImage:)];
     [topImageV addGestureRecognizer:pinchGesture];
+    UITapGestureRecognizer *doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTapHandle:)];
+    doubleTapGesture.numberOfTapsRequired = 2;
+    [topImageV addGestureRecognizer:doubleTapGesture];
     UIButton *topResetBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     topResetBtn.frame = CGRectMake(SCREEN_WIDTH-70, 30, 40, 20);
     topResetBtn.backgroundColor = [UIColor clearColor];
@@ -86,6 +90,28 @@
 }
 
 #pragma mark - privateMethod
+//双击放大缩小
+- (void)doubleTapHandle:(UITapGestureRecognizer *)tapGesture {
+    CGFloat imageVWidth = topImageV.frame.size.width;
+    CGFloat imageVHeight = topImageV.frame.size.height;
+    if (imageVWidth == 100) {
+        _defaultScale = (SCREEN_WIDTH-20)/100;
+    } else {
+        _defaultScale = 100/imageVWidth;
+    }
+    if ((imageVWidth * _defaultScale > (SCREEN_WIDTH - 20)) || (imageVHeight * _defaultScale) > (SCREEN_HEIGHT-60)/2) {
+        topScrollView.contentSize = CGSizeMake(imageVWidth * _defaultScale + 20, imageVHeight * _defaultScale + 20);
+    } else {
+        topScrollView.contentSize = CGSizeMake(SCREEN_WIDTH - 20, (SCREEN_HEIGHT-60)/2);
+    }
+    NSLog(@"%f--%f",imageVWidth * _defaultScale, imageVHeight * _defaultScale);
+    if (imageVWidth * _defaultScale < 100 || imageVHeight * _defaultScale < 100) {
+        [topImageV setFrame:CGRectMake(10, 10, 100, 100)];
+    } else {
+        [topImageV setFrame:CGRectMake(10, 10, imageVWidth * _defaultScale, imageVHeight * _defaultScale)];
+    }
+}
+
 //点击放大
 - (void)tapHandle:(UITapGestureRecognizer *)tapGesture {
     PinchScaleImageView *pinchView = [[PinchScaleImageView alloc] initWithImage:[UIImage imageNamed:@"test1.jpg"]];

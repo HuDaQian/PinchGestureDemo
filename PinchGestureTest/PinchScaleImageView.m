@@ -81,9 +81,6 @@
 - (void)buttonClicked:(UIButton *)btn {
     switch (btn.tag) {
         case 1000:
-            //scale reset
-            _lastGestureScale = 1;
-            _defaultScale = 1;
             //imageV reset
             backgroundScrollView.frame = CGRectMake(0, 120, SCREEN_WIDTH, SCREEN_HEIGHT-220);
             backgroundScrollView.contentSize = CGSizeMake(SCREEN_WIDTH, SCREEN_HEIGHT-220);
@@ -100,13 +97,14 @@
 
 //双击放大缩小
 - (void)tapHandle:(UITapGestureRecognizer *)tapGesture {
-    if (_defaultScale == 2) {
-        _defaultScale = .5;
-    } else {
-        _defaultScale = 2;
-    }
     CGFloat imageVWidth = imageV.frame.size.width;
     CGFloat imageVHeight = imageV.frame.size.height;
+    if (imageVWidth == (SCREEN_WIDTH-20)) {
+        _defaultScale = 2;
+    } else {
+        _defaultScale = (SCREEN_WIDTH-20)/imageVWidth;
+    }
+    
     if ((imageVWidth * _defaultScale > (SCREEN_WIDTH - 20)) || (imageVHeight * _defaultScale) > (SCREEN_HEIGHT - 240)) {
         if ((imageVHeight * _defaultScale + 20)>(SCREEN_HEIGHT-20)) {
         [backgroundScrollView setFrame:CGRectMake(0, 20, SCREEN_WIDTH, SCREEN_HEIGHT-40)];
